@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Api Mapped - Examples</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.0.3/build/pure-min.css"
+      integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ"
+      crossorigin="anonymous"
+    />
+    <style>
+      .title {
+        display: flex;
+        justify-content: center;
+        padding: 15px;
+        letter-spacing: 1px;
+      }
+      .container {
+        display: flex;
+        justify-content: center;
+        padding: 30px;
+        background: #333;
+      }
+      .pure-button {
+        padding: 15px;
+        margin-right: 15px;
+        min-width: 220px;
+      }
+      .pure-button:last-child {
+        margin-right: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="title pure-g">
+      <h1>Api Mapped - Examples</h1>
+    </div>
+    <div class="container pure-g">
+      <button
+        onclick="location.href='/products/simple'"
+        class="pure-button pure-button-primary"
+      >
+        Simple
+      </button>
+      <button
+        onclick="location.href='/products/implicit-operator'"
+        class="pure-button pure-button-primary"
+      >
+        Implicit operator
+      </button>
+      <button
+        onclick="location.href='/products/automapper-1'"
+        class="pure-button pure-button-primary"
+      >
+        AutoMapper 1
+      </button>
+    </div>
+  </body>
+</html>
