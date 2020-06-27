@@ -181,6 +181,40 @@ namespace ApiMapped.Controllers
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
+        [HttpGet("automapper-3")]
+        public IActionResult GetAutoMapper3()
+        {
+            dynamic ModelToEntity;
+            dynamic EntityToViewModel;
+            IEnumerable<ProductViewModel> resultViewModels;
+
+            using (var repository = new ProductRepository())
+            {
+                var modelData = repository.GetByAleatoryFilter();
+
+                execWatch = new Stopwatch();
+                execWatch.Start();
+                var entities = modelData.Select(mdl => (Product)mdl).ToList();
+                ModelToEntity = GetResult(entities.Count());
+
+
+                execWatch = new Stopwatch();
+                execWatch.Start();
+                resultViewModels = _mapper.Map<IEnumerable<ProductViewModel>>(entities);
+                EntityToViewModel = GetResult(resultViewModels.Count());
+
+                entities = null;
+            }
+
+            return Ok(new
+            {
+                From = "AutoMapper 3 + Implicit operator",
+                ModelToEntity,
+                EntityToViewModel,
+                Data = resultViewModels.Take(5),
+            });
+        }
+
         public object GetResult(int lines)
         {
             execWatch.Stop();
