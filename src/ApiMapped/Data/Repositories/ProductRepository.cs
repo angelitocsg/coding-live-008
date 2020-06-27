@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApiMapped.Data.Repositories
 {
-    public class ProductRepository
+    public class ProductRepository : IDisposable
     {
         private readonly Faker faker;
         private readonly SqliteDbContext _context;
@@ -17,9 +17,9 @@ namespace ApiMapped.Data.Repositories
 
         public ProductRepository(bool init = false)
         {
-            if (!init) return;
-
             _context = new SqliteDbContext();
+
+            if (!init) return;
 
             var its = CountRegisters();
             if (its >= TARGET) return;
@@ -66,7 +66,6 @@ namespace ApiMapped.Data.Repositories
                 .Include("Category")
                 .Include("Prices")
                 .Where(it => it.ProductName.Contains("a"))
-                .Take(100)
                 .ToList();
 
             return results;
@@ -79,8 +78,7 @@ namespace ApiMapped.Data.Repositories
             results = _context.Products
                 .Include("Category")
                 .Include("Prices")
-                .Where(it => it.ProductName.Contains("a"))
-                .Take(100);
+                .Where(it => it.ProductName.Contains("a"));
 
             return results;
         }
@@ -104,6 +102,12 @@ namespace ApiMapped.Data.Repositories
                 db.Products.Add(entity);
                 db.SaveChanges();
             }
+        }
+
+        public void Dispose()
+        {
+            try { _context.Dispose(); }
+            catch { }
         }
     }
 }
