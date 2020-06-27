@@ -9,5 +9,11 @@ namespace ApiMapped.Domain.Entities
         {
             CategoryName = categoryName;
         }
+
+        public Category(int id, string categoryName)
+        {
+            Id = id;
+            CategoryName = categoryName;
+        }
     }
 }
