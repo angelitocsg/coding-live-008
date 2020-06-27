@@ -9,7 +9,10 @@ namespace ApiMapped.AutoMapper
         public EntityToModelMappingProfile()
         {
             CreateMap<Product, ProductModel>()
-                .ForMember(dest => dest.Ean13, opt => opt.MapFrom(src => src.CodeBar));
+                .ForMember(dest => dest.Ean13, opt => opt.MapFrom(src => src.CodeBar))
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category));
+
+            CreateMap<Category, CategoryModel>();
         }
     }
 }
