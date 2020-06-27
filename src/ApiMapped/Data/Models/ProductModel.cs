@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using ApiMapped.Domain.Entities;
 
 namespace ApiMapped.Data.Models
 {
     public class ProductModel
     {
-        public ProductModel(Guid id, string productName, Category category, PriceHistory[] prices, string ean13)
+        private ProductModel() {/* EF */}
+
+        public ProductModel(Guid id, string productName, CategoryModel category, ICollection<PriceHistory> prices, string ean13)
         {
             Id = id;
             ProductName = productName;
@@ -16,8 +19,8 @@ namespace ApiMapped.Data.Models
 
         public Guid Id { get; set; }
         public string ProductName { get; set; }
-        public Category Category { get; set; }
-        public PriceHistory[] Prices { get; set; }
+        public CategoryModel Category { get; set; }
+        public ICollection<PriceHistory> Prices { get; set; }
         public string Ean13 { get; set; }
 
         public static implicit operator ProductModel(Product product)
@@ -25,7 +28,7 @@ namespace ApiMapped.Data.Models
             return new ProductModel(
                 id: product.Id,
                 productName: product.ProductName,
-                category: product.Category,
+                category: new CategoryModel(product.Category.Id, product.Category.CategoryName),
                 prices: product.Prices,
                 ean13: product.CodeBar
             );
@@ -36,7 +39,7 @@ namespace ApiMapped.Data.Models
             return new Product(
                 id: product.Id,
                 productName: product.ProductName,
-                category: product.Category,
+                category: new Category(product.Category.Id, product.Category.CategoryName),
                 prices: product.Prices,
                 codeBar: product.Ean13
             );

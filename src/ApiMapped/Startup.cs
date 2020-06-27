@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,7 +24,10 @@ namespace ApiMapped
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            new Data.Repositories.ProductRepository(); // Just to load data to memory
+            new Thread(() =>
+            {
+                new Data.Repositories.ProductRepository(true); // Just to load data to memory
+            }).Start();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

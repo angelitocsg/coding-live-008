@@ -4,46 +4,106 @@ using System.Linq;
 using Bogus;
 using ApiMapped.Data.Models;
 using ApiMapped.Domain.Entities;
+using ApiMapped.Data.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiMapped.Data.Repositories
 {
     public class ProductRepository
     {
-        private static List<ProductModel> data;
         private readonly Faker faker;
+        private readonly SqliteDbContext _context;
+        private const int TARGET = 50000;
 
-        public ProductRepository()
+        public ProductRepository(bool init = false)
         {
-            if (data != null) return;
+            if (!init) return;
+
+            _context = new SqliteDbContext();
+
+            var its = CountRegisters();
+            if (its >= TARGET) return;
 
             faker = new Faker();
-            data = new List<ProductModel>();
 
-            for (int i = 0; i < 1000000; i++)
+            for (int i = its; i < TARGET; i++)
             {
-                data.Add(GetRandom());
+                Add(GetRandom());
             }
         }
 
         private ProductModel GetRandom()
         {
+            var category = new CategoryModel(faker.Commerce.Categories(1).First());
+
             return new ProductModel(
                 id: Guid.NewGuid(),
                 productName: $"{faker.Commerce.Product()}: {faker.Commerce.ProductName()}",
-                category: new Category(faker.Commerce.Categories(1).First()),
-                prices: new PriceHistory[] { new PriceHistory(Decimal.Parse(faker.Commerce.Price())) },
+                category: category,
+                prices: new PriceHistory[] {
+                    new PriceHistory(
+                        faker.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now),
+                        Decimal.Parse(faker.Commerce.Price())
+                    ),
+                    new PriceHistory(
+                        faker.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now),
+                        Decimal.Parse(faker.Commerce.Price())
+                    ),
+                    new PriceHistory(
+                        faker.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now),
+                        Decimal.Parse(faker.Commerce.Price())
+                    ),
+                },
                 ean13: faker.Commerce.Ean13()
             );
         }
 
-        public IEnumerable<ProductModel> GetAll()
+        public IEnumerable<ProductModel> GetByAleatoryFilter()
         {
-            return data;
+            IEnumerable<ProductModel> results = null;
+
+            results = _context.Products
+                .Include("Category")
+                .Include("Prices")
+                .Where(it => it.ProductName.Contains("a"))
+                .Take(100)
+                .ToList();
+
+            return results;
         }
 
-        public IEnumerable<ProductModel> GetProductsByName(string name)
+        public IQueryable<ProductModel> GetByAleatoryFilterToMapper()
         {
-            return data.Where(it => it.ProductName.Contains(name, StringComparison.InvariantCultureIgnoreCase));
+            IQueryable<ProductModel> results = null;
+
+            results = _context.Products
+                .Include("Category")
+                .Include("Prices")
+                .Where(it => it.ProductName.Contains("a"))
+                .Take(100);
+
+            return results;
+        }
+
+        private int CountRegisters()
+        {
+            int registers = 0;
+
+            using (var db = new SqliteDbContext())
+            {
+                registers = db.Products.Count();
+            }
+
+            return registers;
+        }
+
+        public void Add(ProductModel entity)
+        {
+            using (var db = new SqliteDbContext())
+            {
+                db.Products.Add(entity);
+                db.SaveChanges();
+            }
         }
     }
 }
