@@ -26,6 +26,10 @@ dotnet add package Bogus
 dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection
 ```
 
+```shell
+dotnet ef database update
+```
+
 ## References
 
 https://automapper.org/
